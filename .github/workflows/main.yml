@@ -1,30 +1,35 @@
-name: Daily SMA Scan
+name: SMA Strategy Bot
 
 on:
   schedule:
-    - cron: "30 17 * * *"
+    - cron: '30 11 * * 1-5'  # Runs at 5:30 PM IST Mon-Fri
   workflow_dispatch:
 
-jobs:
-  run-sma-scan:
-    runs-on: ubuntu-latest
+permissions:
+  contents: write  # ✅ Required to push commits
 
+jobs:
+  update-signals:
+    runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
+      - name: Checkout repo
         uses: actions/checkout@v3
 
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.10'
+          python-version: 3.11
 
       - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
+        run: pip install -r requirements.txt
 
-      - name: Run script
-        env:
-          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
-          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+      - name: Run strategy
         run: python main.py
+
+      - name: Commit and push updated signals_log.csv
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git add signals_log.csv
+          git commit -m "Update signals_log.csv [skip ci]" || echo "No changes to commit"
+          git push origin HEAD
