@@ -134,7 +134,7 @@ def run_strategy(check_date):
 
 
 # Change mode for testing
-MODE = "LIV"  # Change to "LIVE" to auto-check today
+MODE = "LIVE"  # Change to "LIVE" to auto-check today
 TEST_DATE_STR = "2025-05-23"
 
 if MODE == "LIVE":
