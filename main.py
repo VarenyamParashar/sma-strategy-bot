@@ -29,7 +29,7 @@ def log_signal(df, symbol, signal_type, date, price):
 load_dotenv()
 
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
-TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
+TELEGRAM_CHAT_IDS = os.getenv("TELEGRAM_CHAT_ID").split(',')
 
 def get_nifty_100_symbols():
     try:
@@ -81,9 +81,10 @@ def analyze(df, check_date, symbol):
 
 
 def send_telegram_message(message):
-    url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
-    payload = {'chat_id': TELEGRAM_CHAT_ID, 'text': message}
-    r = requests.post(url, data=payload)
+    for TELEGRAM_CHAT_ID in TELEGRAM_CHAT_IDS:
+        url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
+        payload = {'chat_id': TELEGRAM_CHAT_ID, 'text': message}
+        r = requests.post(url, data=payload)
     return r.status_code == 200
 
 def run_strategy(check_date):
